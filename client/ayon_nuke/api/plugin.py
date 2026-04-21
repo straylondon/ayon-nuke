@@ -37,6 +37,7 @@ from .lib import (
     create_backdrop,
     deprecated,
     maintained_selection,
+    select_nodes,
     get_avalon_knob_data,
     set_node_knobs_from_settings,
     set_node_data,
@@ -1244,17 +1245,18 @@ class ExporterReviewMov(ExporterReview):
 
         self.log.info("Rendered...")
 
-    def save_file(self):
-        import shutil
+    def save_file(self, nodes: list[nuke.Node]):
         with maintained_selection():
+            select_nodes(nodes)
+
             self.log.info("Saving nodes as file...  ")
             # create nk path
             path = f"{os.path.splitext(self.path)[0]}.nk"
             # save file to the path
             if not os.path.exists(os.path.dirname(path)):
                 os.makedirs(os.path.dirname(path))
-            shutil.copyfile(self.instance.context.data["currentFile"], path)
 
+            nuke.nodeCopy(path)
         self.log.info("Nodes exported...")
         return path
 
@@ -1441,8 +1443,8 @@ class ExporterReviewMov(ExporterReview):
 
         # ---------- render or save to nk
         if self.publish_on_farm:
-            nuke.scriptSave()
-            path_nk = self.save_file()
+            nodes = self._temp_nodes[product_name]
+            path_nk = self.save_file(nodes)
             self.data.update({
                 "bakeScriptPath": path_nk,
                 "bakeWriteNodeName": write_node.name(),
