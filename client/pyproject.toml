@@ -1,0 +1,18 @@
+[project]
+name = "ayon-nuke"
+description = "AYON Nuke addon."
+dynamic = ["version"]
+requires-python = ">=3.9"
+dependencies = [
+    "ayon-applications",
+    "ayon-core",
+    "ayon-python-api",
+    "clique",
+]
+
+[tool.setuptools.dynamic]
+version = { attr = "ayon_nuke.version.__version__" }
+
+[tool.uv.sources]
+ayon-applications = { git = "https://github.com/ynput/ayon-applications", subdirectory = "client" }
+ayon-core = { git = "https://github.com/ynput/ayon-core", subdirectory = "client" }
